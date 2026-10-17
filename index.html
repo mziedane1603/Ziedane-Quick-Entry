@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Ziedane Quick Entry</title>
+<meta name="application-name" content="Ziedane Quick Entry"/>
+<meta name="apple-mobile-web-app-title" content="Ziedane Entry"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="theme-color" content="#0B1016"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="icon" type="image/png" sizes="64x64" href="icons/favicon-64.png"/>
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Tajawal',sans-serif;-webkit-tap-highlight-color:transparent;}
+:root{
+  --ink:#E6EDF3;--ink2:#CDD9E5;--ink3:#8B96A3;--ink4:#5A6472;
+  --paper:#0B1016;--surface:#151C24;--surface2:#1C242E;--surface3:#232D39;
+  --line:#28323F;--line2:#333F4D;
+  --accent:#14A68E;--accent-light:#5CCFBF;--accent-dim:rgba(20,166,142,.14);
+  --green:#3FB950;--green-dim:rgba(63,185,80,.12);
+  --red:#F85149;--red-dim:rgba(248,81,73,.12);
+  --amber:#D29922;--amber-dim:rgba(210,153,34,.12);
+  --purple:#B18CE8;--purple-dim:rgba(177,140,232,.12);
+  --r:12px;--r2:16px;--r3:20px;
+  --sh:0 2px 10px rgba(0,0,0,.25);
+}
+body{background:var(--paper);color:var(--ink);min-height:100vh;overflow-x:hidden;}
+input,select,textarea{font-family:inherit;background:var(--surface2);border:1.5px solid var(--line2);color:var(--ink);border-radius:10px;padding:12px 14px;font-size:15px;width:100%;outline:none;transition:.15s;}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim);}
+textarea{resize:vertical;min-height:70px;}
+button{cursor:pointer;border:none;font-family:inherit;}
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-thumb{background:var(--line2);border-radius:8px;}
+
+/* ── LOGIN ── */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;
+  background:#0F2030;background-image:radial-gradient(ellipse at 20% 20%,rgba(20,166,142,.25) 0%,transparent 55%),radial-gradient(ellipse at 85% 80%,rgba(177,140,232,.18) 0%,transparent 55%);}
+.login-card{width:100%;max-width:380px;background:rgba(21,28,36,.85);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.08);border-radius:24px;padding:34px 26px;box-shadow:0 20px 60px rgba(0,0,0,.5);}
+.login-logo{width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,var(--accent),#5B8DEF);display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 16px;box-shadow:0 8px 24px rgba(20,166,142,.35);}
+.login-title{font-size:21px;font-weight:800;text-align:center;}
+.login-sub{font-size:13px;color:var(--ink3);text-align:center;margin-top:4px;margin-bottom:26px;}
+.login-label{font-size:12.5px;color:var(--ink3);font-weight:700;margin-bottom:6px;display:block;}
+.login-field{margin-bottom:16px;}
+.login-field input{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12);color:#fff;}
+.login-field input:focus{background:rgba(255,255,255,.09);border-color:rgba(20,166,142,.7);box-shadow:0 0 0 3px rgba(20,166,142,.2);}
+.login-btn{width:100%;padding:14px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#5B8DEF);color:#fff;font-weight:800;font-size:15px;margin-top:6px;}
+.login-btn:active{transform:scale(.98);}
+.login-err{color:#FF8A80;font-size:12.5px;text-align:center;margin-top:12px;min-height:16px;font-weight:700;}
+.login-note{margin-top:16px;padding:10px 12px;background:rgba(20,166,142,.1);border:1px solid rgba(20,166,142,.25);border-radius:10px;font-size:11.5px;color:var(--accent-light);text-align:center;line-height:1.6;}
+
+/* ── APP SHELL ── */
+#app{display:none;min-height:100vh;padding-bottom:78px;}
+.topbar{position:sticky;top:0;z-index:50;background:rgba(11,16,22,.9);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;}
+.tb-user{display:flex;align-items:center;gap:10px;}
+.tb-avatar{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--accent),#5B8DEF);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#fff;}
+.tb-name{font-size:14px;font-weight:800;}
+.tb-role{font-size:11px;color:var(--ink3);}
+.tb-logout{width:36px;height:36px;border-radius:10px;background:var(--surface2);color:var(--ink3);display:flex;align-items:center;justify-content:center;font-size:15px;}
+.tb-logout:active{background:var(--red-dim);color:var(--red);}
+
+.tabs{display:flex;gap:6px;padding:12px 12px 4px;overflow-x:auto;}
+.tab-btn{flex:1;min-width:78px;padding:10px 6px;border-radius:12px;background:var(--surface);border:1.5px solid var(--line);text-align:center;color:var(--ink3);transition:.15s;}
+.tab-btn .ti{font-size:20px;display:block;margin-bottom:3px;}
+.tab-btn .tl{font-size:11px;font-weight:700;}
+.tab-btn.active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent-light);}
+
+.page{display:none;padding:14px 16px 20px;animation:fadeIn .2s;}
+.page.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r3);padding:18px;margin-bottom:14px;}
+.card-title{font-size:15px;font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.field{margin-bottom:14px;}
+.field label{font-size:12.5px;color:var(--ink3);font-weight:700;margin-bottom:6px;display:block;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.chip-group{display:flex;gap:8px;flex-wrap:wrap;}
+.chip-opt{padding:9px 14px;border-radius:10px;background:var(--surface2);border:1.5px solid var(--line2);color:var(--ink3);font-size:13px;font-weight:700;}
+.chip-opt.active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent-light);}
+
+.submit-btn{width:100%;padding:15px;border-radius:14px;background:linear-gradient(135deg,var(--accent),#5B8DEF);color:#fff;font-weight:800;font-size:15px;margin-top:6px;box-shadow:0 6px 20px rgba(20,166,142,.25);}
+.submit-btn:active{transform:scale(.98);}
+.submit-btn:disabled{opacity:.5;}
+
+.recent-title{font-size:13px;font-weight:800;color:var(--ink3);margin:18px 0 10px;padding-right:2px;}
+.recent-item{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px 15px;margin-bottom:9px;display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.recent-main{font-size:13.5px;font-weight:700;}
+.recent-sub{font-size:11.5px;color:var(--ink3);margin-top:2px;}
+.recent-badge{font-size:11px;font-weight:800;padding:4px 10px;border-radius:8px;white-space:nowrap;}
+.b-green{background:var(--green-dim);color:var(--green);}
+.b-amber{background:var(--amber-dim);color:var(--amber);}
+.b-red{background:var(--red-dim);color:var(--red);}
+.b-accent{background:var(--accent-dim);color:var(--accent-light);}
+.b-purple{background:var(--purple-dim);color:var(--purple);}
+.empty-msg{text-align:center;padding:26px 10px;color:var(--ink4);font-size:13px;}
+
+.bottom-nav{position:fixed;bottom:0;right:0;left:0;background:rgba(11,16,22,.94);backdrop-filter:blur(16px);border-top:1px solid var(--line);display:flex;padding:8px 6px calc(8px + env(safe-area-inset-bottom));z-index:60;}
+.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;color:var(--ink4);}
+.bn-item .bi{font-size:19px;}
+.bn-item .bl{font-size:9.5px;font-weight:700;}
+.bn-item.active{color:var(--accent-light);}
+
+.toast{position:fixed;bottom:92px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--surface3);border:1px solid var(--line2);color:var(--ink);padding:12px 20px;border-radius:12px;font-size:13.5px;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:200;opacity:0;pointer-events:none;transition:.25s;display:flex;align-items:center;gap:8px;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.success{border-color:rgba(63,185,80,.4);}
+.toast.error{border-color:rgba(248,81,73,.4);}
+
+.loader{position:fixed;inset:0;background:var(--paper);display:flex;align-items:center;justify-content:center;z-index:300;flex-direction:column;gap:14px;}
+.spin{width:34px;height:34px;border:3px solid var(--line2);border-top-color:var(--accent);border-radius:50%;animation:sp 0.8s linear infinite;}
+@keyframes sp{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+
+<!-- ═══ LOGIN ═══ -->
+<div class="login-wrap" id="login-wrap">
+  <div class="login-card">
+    <img src="data:image/png;base64,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" alt="Ziedane" style="width:72px;height:72px;border-radius:20px;display:block;margin:0 auto 16px;box-shadow:0 8px 24px rgba(8,145,178,.35);"/>
+    <div class="login-title">Ziedane Quick Entry</div>
+    <div class="login-sub">إدخال سريع — بوابة تسجيل البيانات الميدانية</div>
+    <div class="login-field">
+      <label class="login-label">اسم المستخدم</label>
+      <input type="text" id="l-user" placeholder="اسم المستخدم" autocomplete="username">
+    </div>
+    <div class="login-field">
+      <label class="login-label">كلمة المرور</label>
+      <input type="password" id="l-pass" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="login-btn" id="l-btn" onclick="doLogin()">دخول →</button>
+    <div class="login-err" id="l-err"></div>
+    <div class="login-note">🔒 هذه البوابة مخصصة لحسابات الإدارة (admin / hr / finance) فقط — لتسجيل بيانات ميدانية سريعة من الموبايل.</div>
+  </div>
+</div>
+
+<!-- ═══ APP ═══ -->
+<div id="app">
+  <div class="topbar">
+    <div class="tb-user">
+      <div class="tb-avatar" id="tb-avatar">?</div>
+      <div>
+        <div class="tb-name" id="tb-name">—</div>
+        <div class="tb-role" id="tb-role">—</div>
+      </div>
+    </div>
+    <button class="tb-logout" onclick="doLogout()">⏻</button>
+  </div>
+
+  <div class="tabs">
+    <div class="tab-btn active" data-tab="attendance" onclick="switchTab('attendance')"><span class="ti">⏰</span><span class="tl">تأخير/إجازة</span></div>
+    <div class="tab-btn" data-tab="sales" onclick="switchTab('sales')"><span class="ti">📊</span><span class="tl">مبيعات</span></div>
+    <div class="tab-btn" data-tab="goods" onclick="switchTab('goods')"><span class="ti">📦</span><span class="tl">تقييم بضاعة</span></div>
+    <div class="tab-btn" data-tab="log" onclick="switchTab('log')"><span class="ti">🕓</span><span class="tl">آخر إدخالاتي</span></div>
+  </div>
+
+  <!-- ── TAB: ATTENDANCE ── -->
+  <div class="page active" id="page-attendance">
+    <div class="card">
+      <div class="card-title">⏰ تسجيل تأخير / إجازة / غياب</div>
+      <div class="field">
+        <label>الموظف</label>
+        <select id="at-emp"></select>
+      </div>
+      <div class="field">
+        <label>النوع</label>
+        <div class="chip-group" id="at-type-group">
+          <div class="chip-opt active" data-v="late" onclick="setChip(this,'at-type-group')">⏱ تأخير</div>
+          <div class="chip-opt" data-v="absent" onclick="setChip(this,'at-type-group')">🚫 غياب</div>
+          <div class="chip-opt" data-v="annual" onclick="setChip(this,'at-type-group')">🏖 إجازة سنوية</div>
+          <div class="chip-opt" data-v="sick" onclick="setChip(this,'at-type-group')">🤒 مرضية</div>
+          <div class="chip-opt" data-v="unpaid" onclick="setChip(this,'at-type-group')">📄 بدون مرتب</div>
+          <div class="chip-opt" data-v="overtime" onclick="setChip(this,'at-type-group')">➕ أوفرتايم</div>
+        </div>
+      </div>
+      <div id="at-hours-wrap" class="field">
+        <label>عدد الساعات</label>
+        <input type="number" id="at-hours" step="0.5" placeholder="مثال: 1.5">
+      </div>
+      <div id="at-days-wrap" class="field" style="display:none;">
+        <div class="field-row">
+          <div><label>من تاريخ</label><input type="date" id="at-from"></div>
+          <div><label>إلى تاريخ</label><input type="date" id="at-to"></div>
+        </div>
+      </div>
+      <div class="field">
+        <label>ملاحظات (اختياري)</label>
+        <textarea id="at-note" placeholder="أي تفاصيل إضافية..."></textarea>
+      </div>
+      <button class="submit-btn" id="at-submit" onclick="submitAttendance()">✓ تسجيل</button>
+    </div>
+  </div>
+
+  <!-- ── TAB: SALES ── -->
+  <div class="page" id="page-sales">
+    <div class="card">
+      <div class="card-title">📊 تسجيل تقرير مبيعات مدينة</div>
+      <div class="field">
+        <label>المدينة</label>
+        <select id="sl-city"></select>
+      </div>
+      <div class="field">
+        <label>الشهر</label>
+        <input type="month" id="sl-month">
+      </div>
+      <div class="field-row">
+        <div class="field"><label>مستهدف المبيعات</label><input type="number" id="sl-sales-target" placeholder="0"></div>
+        <div class="field"><label>مبيعات فعلية</label><input type="number" id="sl-sales-actual" placeholder="0"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>مستهدف عملاء</label><input type="number" id="sl-cust-target" placeholder="0"></div>
+        <div class="field"><label>عملاء فعلي</label><input type="number" id="sl-cust-actual" placeholder="0"></div>
+      </div>
+      <button class="submit-btn" id="sl-submit" onclick="submitSales()">✓ تسجيل</button>
+    </div>
+  </div>
+
+  <!-- ── TAB: GOODS EVAL ── -->
+  <div class="page" id="page-goods">
+    <div class="card">
+      <div class="card-title" id="gd-form-title">📦 إضافة حالة دفع</div>
+      <div class="field">
+        <label>اسم حالة الدفع</label>
+        <input type="text" id="gd-name" placeholder="مثال: نقدي فوري">
+      </div>
+      <div class="field-row">
+        <div class="field"><label>قيمة المشتريات (ج)</label><input type="number" id="gd-purchase" placeholder="0"></div>
+        <div class="field"><label>قيمة المبيعات (ج)</label><input type="number" id="gd-sales" placeholder="0"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>قيمة المخزون (ج)</label><input type="number" id="gd-stock" placeholder="0"></div>
+        <div class="field"><label>عدد الأصناف</label><input type="number" id="gd-items" placeholder="0"></div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="submit-btn" id="gd-submit" onclick="submitGoods()" style="flex:1;">✓ حفظ</button>
+        <button class="submit-btn" id="gd-cancel" onclick="cancelGoodsEdit()" style="display:none;flex:0 0 90px;background:var(--surface2);box-shadow:none;color:var(--ink3);">إلغاء</button>
+      </div>
+    </div>
+    <div class="recent-title">حالات الدفع المسجّلة</div>
+    <div id="goods-list"></div>
+  </div>
+
+  <!-- ── TAB: LOG ── -->
+  <div class="page" id="page-log">
+    <div class="recent-title">آخر إدخالاتي (آخر 20)</div>
+    <div id="log-list"></div>
+  </div>
+
+  <nav class="bottom-nav">
+    <div class="bn-item active" data-tab="attendance" onclick="switchTab('attendance')"><span class="bi">⏰</span><span class="bl">تأخير</span></div>
+    <div class="bn-item" data-tab="sales" onclick="switchTab('sales')"><span class="bi">📊</span><span class="bl">مبيعات</span></div>
+    <div class="bn-item" data-tab="goods" onclick="switchTab('goods')"><span class="bi">📦</span><span class="bl">بضاعة</span></div>
+    <div class="bn-item" data-tab="log" onclick="switchTab('log')"><span class="bi">🕓</span><span class="bl">السجل</span></div>
+  </nav>
+</div>
+
+<div class="loader" id="loader" style="display:none;">
+  <div class="spin"></div>
+  <div style="color:var(--ink3);font-size:13px;font-weight:700;">جاري التحميل...</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════
+// FIREBASE — نفس قاعدة بيانات النظام الرئيسي بالظبط
+// ══════════════════════════════════════════════
+const FB_CONFIG = {
+  apiKey: "AIzaSyDLgVGiu6HJJKlUCMqmrZnEGVGVIFHIVUQ",
+  authDomain: "ziedane-hr-61f34.firebaseapp.com",
+  projectId: "ziedane-hr-61f34",
+};
+const FS_BASE = `https://firestore.googleapis.com/v1/projects/${FB_CONFIG.projectId}/databases/(default)/documents`;
+const APP_SECRET = "ZHR_9k@mX#2qL!pT_secure_2025";
+
+async function fsGet(collection, docId){
+  const url = `${FS_BASE}/${collection}/${docId}?key=${FB_CONFIG.apiKey}`;
+  const res = await fetch(url);
+  if(res.status===404) return null;
+  if(!res.ok) throw new Error(`Firestore read failed: ${res.status}`);
+  const doc = await res.json();
+  const payload = doc.fields?.payload?.stringValue;
+  return payload ? JSON.parse(payload) : null;
+}
+async function fsSet(collection, docId, data){
+  const fields = {
+    payload:    { stringValue: JSON.stringify(data) },
+    updated_at: { timestampValue: new Date().toISOString() },
+    _token:     { stringValue: APP_SECRET }
+  };
+  const url = `${FS_BASE}/${collection}/${docId}?key=${FB_CONFIG.apiKey}`;
+  const res = await fetch(url, { method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify({fields}) });
+  if(!res.ok){
+    let errBody=''; try{ const j=await res.json(); errBody=j?.error?.message||JSON.stringify(j);}catch(e){}
+    throw new Error(`Firestore write failed: ${res.status} — ${errBody}`);
+  }
+  return res.json();
+}
+
+// ══════════════════════════════════════════════════════════
+// 🔒 حماية من فقدان البيانات عند الاستخدام المتزامن (نفس منطق باقي التطبيقات)
+// ══════════════════════════════════════════════════════════
+let _syncBaseline = {};
+function snapshotSyncBaseline(){
+  ['attendance','goodsEval','salesRecords'].forEach(k=>{
+    _syncBaseline[k] = JSON.parse(JSON.stringify(state[k]||[]));
+  });
+}
+// key: اسم المجموعة. keyField: اسم الحقل اللي بيحدد هوية السجل بشكل فريد (id عادةً، إلا goodsEval بيستخدم name)
+async function mergeAndSaveCollection(key, keyField='id'){
+  let serverArr;
+  try{ serverArr = (await fsGet('zh_data', key)) || []; }
+  catch(e){ serverArr = null; }
+  const local = state[key]||[];
+  if(!Array.isArray(serverArr)){
+    await fsSet('zh_data', key, local);
+    _syncBaseline[key] = JSON.parse(JSON.stringify(local));
+    return local;
+  }
+  const baseline = _syncBaseline[key] || [];
+  const kf = r => r[keyField];
+  const baseIds = new Set(baseline.map(kf));
+  const localIds = new Set(local.map(kf));
+  const localAdds = local.filter(r=>!baseIds.has(kf(r)));
+  const localDeleteIds = new Set(baseline.filter(r=>!localIds.has(kf(r))).map(kf));
+  const baselineByKey = new Map(baseline.map(r=>[kf(r),r]));
+  const localEditsByKey = new Map(
+    local.filter(r=>baseIds.has(kf(r)) && JSON.stringify(r)!==JSON.stringify(baselineByKey.get(kf(r))))
+         .map(r=>[kf(r),r])
+  );
+  let merged = serverArr.filter(r=>!localDeleteIds.has(kf(r)));
+  merged = merged.map(r=>localEditsByKey.has(kf(r))?localEditsByKey.get(kf(r)):r);
+  const mergedKeys = new Set(merged.map(kf));
+  localEditsByKey.forEach((rec,k)=>{ if(!mergedKeys.has(k)){ merged.push(rec); mergedKeys.add(k); } });
+  localAdds.forEach(rec=>{ if(!mergedKeys.has(kf(rec))){ merged.push(rec); mergedKeys.add(kf(rec)); } });
+
+  await fsSet('zh_data', key, merged);
+  state[key] = merged;
+  _syncBaseline[key] = JSON.parse(JSON.stringify(merged));
+  return merged;
+}
+async function hashPassword(pass){
+  const buf=new TextEncoder().encode(pass);
+  const hash=await crypto.subtle.digest('SHA-256',buf);
+  return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+function gid(id){ return document.getElementById(id); }
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2); }
+function fmt(n){ return Number(n||0).toLocaleString('en-US'); }
+function escapeHTML(str){
+  if(str===null||str===undefined) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function toast(msg,type='success'){
+  const t=gid('toast');
+  t.textContent=(type==='success'?'✅ ':'❌ ')+msg;
+  t.className='toast show '+type;
+  clearTimeout(window._toastTimer);
+  window._toastTimer=setTimeout(()=>t.classList.remove('show'),2600);
+}
+
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+let state = { employees:[], attendance:[], salesRecords:[], goodsEval:[], meta:{} };
+let currentUser = null;
+const DEFAULT_USERS = [
+  {user:'admin',  pass:'admin123', role:'admin',  name:'المدير'},
+  {user:'hr',     pass:'hr123',    role:'hr',      name:'HR'},
+  {user:'finance',pass:'fin123',   role:'finance', name:'المالية'},
+];
+
+async function doLogin(){
+  const userInput = gid('l-user').value.trim();
+  const passInput = gid('l-pass').value;
+  const errEl = gid('l-err');
+  const btn = gid('l-btn');
+  errEl.textContent='';
+  if(!userInput || !passInput){ errEl.textContent='من فضلك ادخل اسم المستخدم وكلمة المرور'; return; }
+  btn.disabled=true; btn.textContent='جاري التحقق...';
+
+  try{
+    const meta = await fsGet('zh_data','meta');
+    // توحيد أسماء الحقول: الحسابات مخزّنة بصيغة user/pass في النظام الرئيسي
+    const rawUsers = (meta?.runtimeUsers?.length ? meta.runtimeUsers : DEFAULT_USERS);
+    const users = rawUsers.map(u=>({
+      username: u.username || u.user,
+      password: u.password || u.pass,
+      role: u.role, name: u.name
+    }));
+
+    const hashedInput = await hashPassword(passInput);
+    const found = users.find(u => u.username && u.username.toLowerCase()===userInput.toLowerCase()
+      && (u.password===hashedInput || u.password===passInput));
+
+    if(!found){
+      errEl.textContent='اسم المستخدم أو كلمة المرور غير صحيحة';
+      btn.disabled=false; btn.textContent='دخول →';
+      return;
+    }
+    // 🔒 بوابة الإدخال السريع لحسابات admin/hr/finance فقط — لا يوجد فيها أي مسار دخول لموظف عادي
+    currentUser = found;
+    sessionStorage.setItem('qe_user', JSON.stringify(found));
+    await bootApp();
+  }catch(e){
+    errEl.textContent='تعذّر الاتصال — تحقق من الإنترنت';
+    btn.disabled=false; btn.textContent='دخول →';
+  }
+}
+
+function doLogout(){
+  sessionStorage.removeItem('qe_user');
+  location.reload();
+}
+
+async function bootApp(){
+  gid('login-wrap').style.display='none';
+  gid('loader').style.display='flex';
+  try{
+    const [employees, salesRecords, goodsEval] = await Promise.all([
+      fsGet('zh_data','employees'),
+      fsGet('zh_data','salesRecords'),
+      fsGet('zh_data','goodsEval'),
+    ]);
+    state.employees = employees || [];
+    state.salesRecords = salesRecords || [];
+    state.goodsEval = goodsEval || [];
+    // نجيب سجل الحضور كامل عشان نضيفله سجل جديد من غير ما نفقد بيانات موجودة
+    state.attendance = (await fsGet('zh_data','attendance')) || [];
+    snapshotSyncBaseline(); // نقطة الأساس للمقارنة عند الحفظ لاحقاً — تحمي من فقدان بيانات غيرك وقت الحفظ
+  }catch(e){
+    toast('تعذّر تحميل البيانات — تأكد من الاتصال بالإنترنت','error');
+  }
+  gid('loader').style.display='none';
+  gid('app').style.display='block';
+  gid('tb-name').textContent = currentUser.name || currentUser.username;
+  gid('tb-avatar').textContent = (currentUser.name||currentUser.username||'?').trim().charAt(0);
+  const roleLabel={admin:'مدير النظام',hr:'موارد بشرية',finance:'مالية'};
+  gid('tb-role').textContent = roleLabel[currentUser.role] || currentUser.role;
+  fillEmpSelect();
+  fillCitySelect();
+  renderGoodsList();
+  gid('at-from').value = new Date().toISOString().slice(0,10);
+  gid('at-to').value = new Date().toISOString().slice(0,10);
+  gid('sl-month').value = new Date().toISOString().slice(0,7);
+  renderLog();
+}
+
+// ══════════════════════════════════════════════
+// TABS
+// ══════════════════════════════════════════════
+function switchTab(tab){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn,.bn-item').forEach(b=>b.classList.remove('active'));
+  gid('page-'+tab).classList.add('active');
+  document.querySelectorAll(`[data-tab="${tab}"]`).forEach(b=>b.classList.add('active'));
+  if(tab==='log') renderLog();
+}
+function setChip(el, groupId){
+  document.querySelectorAll('#'+groupId+' .chip-opt').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  if(groupId==='at-type-group') toggleAttFields();
+}
+function toggleAttFields(){
+  const type = document.querySelector('#at-type-group .chip-opt.active')?.dataset.v;
+  const isHours = type==='late' || type==='overtime';
+  gid('at-hours-wrap').style.display = isHours ? '' : 'none';
+  gid('at-days-wrap').style.display = isHours ? 'none' : '';
+}
+
+// ══════════════════════════════════════════════
+// FILL SELECTS
+// ══════════════════════════════════════════════
+function fillEmpSelect(){
+  const s=gid('at-emp'); if(!s) return;
+  const sorted=[...state.employees].filter(e=>e.status!=='inactive'&&e.status!=='terminated').sort((a,b)=>(a.name||'').localeCompare(b.name||'','ar'));
+  s.innerHTML = `<option value="">— اختر موظف —</option>` + sorted.map(e=>`<option value="${e.code}">${escapeHTML(e.name)}</option>`).join('');
+}
+function fillCitySelect(){
+  const s=gid('sl-city'); if(!s) return;
+  const cities = [...new Map(state.salesRecords.map(r=>[r.cityCode,{code:r.cityCode,name:r.cityName}])).values()]
+    .sort((a,b)=>(a.name||'').localeCompare(b.name||'','ar'));
+  s.innerHTML = `<option value="">— اختر مدينة أو اكتب جديدة —</option>` +
+    cities.map(c=>`<option value="${escapeHTML(c.code)}" data-name="${escapeHTML(c.name)}">${escapeHTML(c.name)} (${escapeHTML(c.code)})</option>`).join('') +
+    `<option value="__new__">➕ مدينة جديدة</option>`;
+  s.onchange = () => {
+    if(s.value==='__new__'){
+      const code = prompt('كود المدينة الجديدة:'); if(!code) { s.value=''; return; }
+      const name = prompt('اسم المدينة:'); if(!name) { s.value=''; return; }
+      const opt = document.createElement('option');
+      opt.value=code; opt.dataset.name=name; opt.textContent=`${name} (${code})`; opt.selected=true;
+      s.insertBefore(opt, s.lastElementChild);
+    }
+  };
+}
+
+// ══════════════════════════════════════════════
+// SUBMIT: ATTENDANCE
+// ══════════════════════════════════════════════
+async function submitAttendance(){
+  const empCode = gid('at-emp').value;
+  if(!empCode){ toast('اختر الموظف أولاً','error'); return; }
+  const type = document.querySelector('#at-type-group .chip-opt.active')?.dataset.v || 'late';
+  const isHours = type==='late' || type==='overtime';
+  const hours = isHours ? (parseFloat(gid('at-hours').value)||0) : 0;
+  const from = gid('at-from').value;
+  const to = isHours ? from : (gid('at-to').value || from);
+  const note = gid('at-note').value.trim();
+  if(isHours && !hours){ toast('أدخل عدد الساعات','error'); return; }
+  if(!isHours && (!from || !to)){ toast('حدد تاريخ من وإلى','error'); return; }
+
+  const days = isHours ? 0 : Math.max(1, Math.round((new Date(to)-new Date(from))/86400000)+1); // نفس معادلة calcDays في النظام الرئيسي بالظبط
+  const month = from.slice(0,7);
+  const rec = { id:uid(), empCode:parseInt(empCode), month, type, from, to, days, hours, note, status:'approved', source:'quickentry', enteredBy:currentUser.username, createdAt:new Date().toISOString() };
+
+  const btn=gid('at-submit'); btn.disabled=true; btn.textContent='جاري الحفظ...';
+  try{
+    state.attendance.push(rec);
+    await mergeAndSaveCollection('attendance');
+    pushLog('attendance', rec);
+    toast('تم تسجيل السجل بنجاح');
+    gid('at-note').value='';
+    gid('at-hours').value='';
+  }catch(e){
+    state.attendance.pop();
+    toast('فشل الحفظ — حاول مرة أخرى','error');
+  }
+  btn.disabled=false; btn.textContent='✓ تسجيل';
+}
+
+// ══════════════════════════════════════════════
+// SUBMIT: SALES
+// ══════════════════════════════════════════════
+async function submitSales(){
+  const citySel = gid('sl-city');
+  const cityCode = citySel.value;
+  const cityName = citySel.selectedOptions[0]?.dataset.name || '';
+  const month = gid('sl-month').value;
+  if(!cityCode || cityCode==='__new__' || !cityName || !month){ toast('اختر المدينة والشهر','error'); return; }
+  const salesTarget = parseFloat(gid('sl-sales-target').value)||0;
+  const salesActual = parseFloat(gid('sl-sales-actual').value)||0;
+  const custTarget = parseInt(gid('sl-cust-target').value)||0;
+  const custActual = parseInt(gid('sl-cust-actual').value)||0;
+
+  const rec = { id:uid(), cityCode, cityName, month, salesTarget, salesActual, custTarget, custActual, source:'quickentry', enteredBy:currentUser.username, createdAt:new Date().toISOString() };
+
+  const btn=gid('sl-submit'); btn.disabled=true; btn.textContent='جاري الحفظ...';
+  try{
+    // لو فيه سجل بنفس المدينة والشهر، نحدّثه بدل ما نكرره
+    const idx = state.salesRecords.findIndex(r=>r.cityCode===cityCode && r.month===month);
+    if(idx>-1) state.salesRecords[idx] = {...state.salesRecords[idx], ...rec, id:state.salesRecords[idx].id};
+    else state.salesRecords.push(rec);
+    await mergeAndSaveCollection('salesRecords');
+    pushLog('sales', rec);
+    toast('تم تسجيل تقرير المبيعات');
+    gid('sl-sales-target').value=''; gid('sl-sales-actual').value='';
+    gid('sl-cust-target').value=''; gid('sl-cust-actual').value='';
+    fillCitySelect();
+  }catch(e){
+    toast('فشل الحفظ — حاول مرة أخرى','error');
+  }
+  btn.disabled=false; btn.textContent='✓ تسجيل';
+}
+
+// ══════════════════════════════════════════════
+// GOODS EVALUATION (تقييم البضاعة — نفس سكيمة النظام الرئيسي بالظبط)
+// ══════════════════════════════════════════════
+function sanitizeNameField(str){ return String(str||'').replace(/[<>]/g,'').trim(); }
+let _goodsEditIdx = -1;
+
+async function submitGoods(){
+  const name = sanitizeNameField(gid('gd-name').value);
+  if(!name){ toast('اكتب اسم حالة الدفع','error'); return; }
+  const purchase = parseFloat(gid('gd-purchase').value)||0;
+  const sales = parseFloat(gid('gd-sales').value)||0;
+  const stock = parseFloat(gid('gd-stock').value)||0;
+  const items = parseInt(gid('gd-items').value)||0;
+  if(purchase<=0 && sales<=0 && stock<=0){ toast('أدخل قيمة واحدة على الأقل','error'); return; }
+
+  const row = { name, purchase, sales, stock, items };
+  const btn=gid('gd-submit'); btn.disabled=true; btn.textContent='جاري الحفظ...';
+  try{
+    if(_goodsEditIdx>=0){
+      state.goodsEval[_goodsEditIdx] = row;
+    } else {
+      if(state.goodsEval.find(r=>r.name===name)){ toast('حالة الدفع موجودة بالفعل — عدّلها من الليستة تحت','error'); btn.disabled=false; btn.textContent='✓ حفظ'; return; }
+      state.goodsEval.push(row);
+    }
+    await mergeAndSaveCollection('goodsEval','name');
+    pushLog('goods', {...row, enteredBy:currentUser.username, createdAt:new Date().toISOString()});
+    toast(_goodsEditIdx>=0 ? 'تم التعديل' : 'تم تسجيل حالة الدفع');
+    cancelGoodsEdit();
+    renderGoodsList();
+  }catch(e){
+    toast('فشل الحفظ — حاول مرة أخرى','error');
+  }
+  btn.disabled=false; btn.textContent='✓ حفظ';
+}
+
+function editGoodsRow(idx){
+  const r = state.goodsEval[idx]; if(!r) return;
+  _goodsEditIdx = idx;
+  gid('gd-name').value = r.name;
+  gid('gd-purchase').value = r.purchase||'';
+  gid('gd-sales').value = r.sales||'';
+  gid('gd-stock').value = r.stock||'';
+  gid('gd-items').value = r.items||'';
+  gid('gd-form-title').textContent = '✏️ تعديل: ' + r.name;
+  gid('gd-cancel').style.display = '';
+  gid('page-goods').scrollIntoView({behavior:'smooth'});
+}
+function cancelGoodsEdit(){
+  _goodsEditIdx = -1;
+  gid('gd-name').value=''; gid('gd-purchase').value=''; gid('gd-sales').value=''; gid('gd-stock').value=''; gid('gd-items').value='';
+  gid('gd-form-title').textContent = '📦 إضافة حالة دفع';
+  gid('gd-cancel').style.display = 'none';
+}
+async function deleteGoodsRow(idx){
+  const r = state.goodsEval[idx]; if(!r) return;
+  if(!confirm(`حذف "${r.name}"؟`)) return;
+  const backup = [...state.goodsEval];
+  state.goodsEval.splice(idx,1);
+  try{
+    await mergeAndSaveCollection('goodsEval','name');
+    toast('تم الحذف');
+    if(_goodsEditIdx===idx) cancelGoodsEdit();
+    renderGoodsList();
+  }catch(e){
+    state.goodsEval = backup;
+    toast('فشل الحذف — حاول مرة أخرى','error');
+  }
+}
+function renderGoodsList(){
+  const el = gid('goods-list');
+  if(!state.goodsEval.length){ el.innerHTML = `<div class="empty-msg">لا توجد حالات دفع مسجّلة بعد</div>`; return; }
+  el.innerHTML = state.goodsEval.map((r,idx)=>`
+    <div class="recent-item">
+      <div>
+        <div class="recent-main">📦 ${escapeHTML(r.name)}</div>
+        <div class="recent-sub">مشتريات ${fmt(r.purchase)} • مبيعات ${fmt(r.sales)} • مخزون ${fmt(r.stock)} • ${fmt(r.items)} صنف</div>
+      </div>
+      <div style="display:flex;gap:6px;">
+        <button onclick="editGoodsRow(${idx})" style="background:var(--accent-dim);color:var(--accent-light);border-radius:8px;padding:7px 10px;font-size:12px;font-weight:800;">✏️</button>
+        <button onclick="deleteGoodsRow(${idx})" style="background:var(--red-dim);color:var(--red);border-radius:8px;padding:7px 10px;font-size:12px;font-weight:800;">🗑</button>
+      </div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════════
+// LOCAL ACTIVITY LOG (سجل شخصي على الجهاز — عرض سريع لآخر إدخالاتي)
+// ══════════════════════════════════════════════
+function pushLog(kind, rec){
+  let log = JSON.parse(localStorage.getItem('qe_mylog')||'[]');
+  log.unshift({kind, rec, ts:Date.now()});
+  log = log.slice(0,20);
+  localStorage.setItem('qe_mylog', JSON.stringify(log));
+}
+function renderLog(){
+  const el = gid('log-list');
+  const log = JSON.parse(localStorage.getItem('qe_mylog')||'[]');
+  if(!log.length){ el.innerHTML=`<div class="empty-msg">لسه ماسجلتش أي بيانات من الجهاز ده</div>`; return; }
+
+  const ATT_LABELS={absent:'غياب',late:'تأخير',overtime:'أوفرتايم',annual:'إجازة سنوية',sick:'مرضية',unpaid:'إجازة بدون مرتب'};
+  const kindMeta={
+    attendance:{icon:'⏰',cls:'b-amber'},
+    sales:{icon:'📊',cls:'b-accent'},
+    goods:{icon:'📦',cls:'b-purple'},
+  };
+  el.innerHTML = log.map(item=>{
+    const emp = state.employees.find(e=>String(e.code)===String(item.rec.empCode));
+    const m = kindMeta[item.kind];
+    let main='', sub='';
+    if(item.kind==='attendance'){
+      main = `${m.icon} ${ATT_LABELS[item.rec.type]||item.rec.type} — ${emp?.name||item.rec.empCode}`;
+      sub = item.rec.hours ? `${item.rec.hours} ساعة` : `${item.rec.from} → ${item.rec.to}`;
+    } else if(item.kind==='sales'){
+      main = `${m.icon} مبيعات ${item.rec.cityName}`;
+      sub = `${item.rec.month} — مستهدف ${fmt(item.rec.salesTarget)} / فعلي ${fmt(item.rec.salesActual)}`;
+    } else {
+      main = `${m.icon} تقييم بضاعة — ${escapeHTML(item.rec.name)}`;
+      sub = `مشتريات ${fmt(item.rec.purchase)} • مبيعات ${fmt(item.rec.sales)} • مخزون ${fmt(item.rec.stock)}`;
+    }
+    const timeStr = new Date(item.ts).toLocaleString('ar-EG',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+    return `<div class="recent-item">
+      <div><div class="recent-main">${main}</div><div class="recent-sub">${sub}</div></div>
+      <div class="recent-badge ${m.cls}">${timeStr}</div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+toggleAttFields();
+(function tryRestoreSession(){
+  const saved = sessionStorage.getItem('qe_user');
+  if(saved){
+    try{ currentUser = JSON.parse(saved); bootApp(); }catch(e){}
+  }
+})();
+gid('l-pass').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+</script>
+<button id="install-btn" onclick="installApp()" style="display:none;position:fixed;top:12px;left:12px;z-index:99999;background:linear-gradient(135deg,#059669,#0891b2);color:#fff;border:none;border-radius:20px;padding:9px 16px;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:800;box-shadow:0 6px 20px rgba(0,0,0,.35);cursor:pointer;">📲 تثبيت التطبيق</button>
+<script>
+// ── PWA: Service Worker + زرار تثبيت التطبيق (أندرويد) ──
+if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
+  window.addEventListener('load',()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
+}
+let _installEvt=null;
+window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); _installEvt=e; const b=document.getElementById('install-btn'); if(b) b.style.display='block'; });
+window.addEventListener('appinstalled',()=>{ _installEvt=null; const b=document.getElementById('install-btn'); if(b) b.style.display='none'; });
+function installApp(){
+  if(!_installEvt) return;
+  _installEvt.prompt();
+  _installEvt.userChoice.finally(()=>{ _installEvt=null; const b=document.getElementById('install-btn'); if(b) b.style.display='none'; });
+}
+</script>
+</body>
+</html>
